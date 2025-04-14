@@ -6,8 +6,8 @@ import { FiLoader } from "react-icons/fi";
 
 
 const LoggingState=()=>(
-  <div className='h-[100vh] w-[100vw] bg-black flex items-center justify-center'>
-			<div className='w-[90%] max-w-md bg-white border-nonw'>
+  <div className='fixed top-0 left-0 w-screen h-screen bg-black/50 z-[1000] flex justify-center items-center'>
+			<div className='w-[42.5vw] h-[30vh] bg-white flex flex-col gap-[2vh] pt-[3vh] px-[2vw] rounded-md'>
 				<div className='flex flex-col items-center gap-4 pt-6'>
 					<FiLoader className='size-6 text-blue-500 animate-spin' />
 					<h3 className='text-blue-400 text-xl font-bold'>Logging you in</h3>
@@ -27,7 +27,7 @@ const LoginComponents = ({setLoginStatus}) => {
   async function LoginUser(){
     setLoading(true);
     try {
-      const response=await axios.post('http://localhost:3000/api/user/login',
+      const response=await axios.post('https://promanagerbakend.onrender.com/api/user/login',
         formData
       )
 

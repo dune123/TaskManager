@@ -12,7 +12,7 @@ const RegisterComponents = ({setLoginStatus}) => {
 
   async function registerUser(){
     try {
-      const res=await axios.post('http://localhost:3000/api/user/register',
+      const res=await axios.post('https://promanagerbakend.onrender.com/api/user/register',
         formData
       )
       

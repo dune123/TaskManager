@@ -1,8 +1,20 @@
 import axios from 'axios';
 import React, { useState } from 'react'
+import { FiLoader } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
-const AddTask = ({setAddTask}) => {
+const AddTaskStage=()=>(
+  <div className='fixed top-0 left-0 w-screen h-screen bg-black/50 z-[1000] flex justify-center items-center'>
+      <div className='w-[42.5vw] h-[30vh] bg-white flex flex-col gap-[2vh] pt-[3vh] px-[2vw] rounded-md'>
+        <div className='flex flex-col items-center gap-4 pt-6'>
+          <FiLoader className='size-6 text-red-500 animate-spin' />
+          <h3 className='text-red-400 text-xl font-bold'>Adding your task</h3>
+        </div>
+      </div>
+    </div>
+)
+const AddTask = ({setAddTask,getAllTask}) => {
+  const [loading,setLoading]=useState(false);
   const [taskData,setTaskData]=useState({
     taskName:"",
     description:"",
@@ -14,8 +26,9 @@ const AddTask = ({setAddTask}) => {
   const token=localStorage.getItem("token")
 
   async function AddTask(){
+    setLoading(true)
     try {
-      const res=await axios.post('http://localhost:3000/api/task/createTask',taskData,{
+      const res=await axios.post('https://promanagerbakend.onrender.com/api/task/createTask',taskData,{
         headers: {
           Authorization: `Bearer ${token}`,
         }
@@ -23,17 +36,26 @@ const AddTask = ({setAddTask}) => {
 
       if(res.status==201){
         toast.success(res.data.message)
+        getAllTask()
         setAddTask(false);
      }
      else{
        toast.error(res.data.message)
      }
+     setLoading(false);
     }
       catch (error) {
         toast.error(error.message);
+        setLoading(false)
+    }
+    finally{
+      setLoading(false)
     }
     }
-  
+
+    if(loading){
+       return <AddTaskStage/>
+    }
   return (
     <div className="fixed top-0 left-0 w-screen h-screen bg-black/50 z-[1000] flex justify-center items-center">
       <div className="w-[42.5vw] h-[50vh] bg-white flex flex-col gap-[2vh] pt-[3vh] px-[2vw] rounded-md">

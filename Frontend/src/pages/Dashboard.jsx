@@ -15,7 +15,7 @@ const Dashboard = () => {
 
   async function getAllTask() {
     try {
-      const response = await axios.get('http://localhost:3000/api/task/getTask', {
+      const response = await axios.get('https://promanagerbakend.onrender.com/api/task/getTask', {
         headers: {
           Authorization: `Bearer ${token}`,
         }
@@ -44,7 +44,7 @@ const Dashboard = () => {
 
   async function Logout(){
     try {
-      await axios.post('http://localhost:3000/api/user/logout',{},{
+      await axios.post('https://promanagerbakend.onrender.com/api/user/logout',{},{
         headers: {
           Authorization: `Bearer ${token}`,
         }
@@ -65,7 +65,7 @@ const Dashboard = () => {
       <div className="w-full h-full flex">
         {/* Sidebar */}
         <div className="w-[15%] flex flex-col justify-between items-center p-10 border-r-2">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <h1 className="text-2xl font-bold">ProManager</h1>
           <h1 className='text-2xl font-bold cursor-pointer' onClick={Logout}>Logout</h1>
         </div>
 
@@ -100,7 +100,7 @@ const Dashboard = () => {
       </div>
 
       {/* Add Task Modal */}
-      {addTask && <AddTask setAddTask={setAddTask} />}
+      {addTask && <AddTask setAddTask={setAddTask} getAllTask={getAllTask}/>}
     </>
   );
 };
