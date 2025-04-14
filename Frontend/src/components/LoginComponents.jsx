@@ -1,0 +1,80 @@
+import axios from 'axios'
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { FiLoader } from "react-icons/fi";
+
+
+const LoggingState=()=>(
+  <div className='h-[100vh] w-[100vw] bg-black flex items-center justify-center'>
+			<div className='w-[90%] max-w-md bg-white border-nonw'>
+				<div className='flex flex-col items-center gap-4 pt-6'>
+					<FiLoader className='size-6 text-blue-500 animate-spin' />
+					<h3 className='text-blue-400 text-xl font-bold'>Logging you in</h3>
+					<p className='text-blue-400 text-sm'>Redirecting...</p>
+				</div>
+			</div>
+		</div>
+)
+
+const LoginComponents = ({setLoginStatus}) => {
+  const [loading,setLoading]=useState(false);
+  const [formData,setFormData]=useState({
+    email:"",
+    password:""
+  })
+  const Navigate=useNavigate();
+  async function LoginUser(){
+    setLoading(true);
+    try {
+      const response=await axios.post('http://localhost:3000/api/user/login',
+        formData
+      )
+
+      if(response.status==201){
+        localStorage.setItem("token",response.data.token)
+        toast.success("Login successfully")
+        Navigate("/dashboard")
+      }
+      else{
+        toast.error(response.data.message);
+      }
+      setLoading(false);
+    } catch (error) {
+      toast.error(error.message)
+      setLoading(false);
+    }
+    finally{
+      setLoading(false);
+    }
+  }
+
+  if(loading){
+    return <LoggingState/>
+  }
+
+  return (
+    <div className='flex flex-col items-center gap-10 pt-20 w-[50%]'>
+        <h1 className='text-3xl'>Login</h1>
+        <div className='flex flex-col gap-4'>
+          <input type='text' placeholder='Email' className='p-2 border-[#D0D0D0] border-2 w-[30vw] rounded-md'
+            onChange={(e)=>setFormData((prev)=>({
+              ...prev,
+              email:e.target.value
+            }))}
+          />
+          <input type='password' placeholder='Password' className='p-2 border-[#D0D0D0] border-2 w-[30vw] rounded-md'
+            onChange={(e)=>setFormData((prev)=>({
+              ...prev,
+              password:e.target.value
+            }))}
+          />
+        </div>
+          <button className='bg-[#17A2B8] w-[30vw] p-2 rounded-2xl text-white' onClick={LoginUser}>Log in</button>
+        <h2>Have no account yet?</h2>
+        <button className='bg-[white] border-[#17A2B8] border-2 w-[30vw] p-2 rounded-2xl text-[#17A2BB]' onClick={()=>setLoginStatus(false)}>Register</button>
+    </div>
+  )
+}
+
+export default LoginComponents
