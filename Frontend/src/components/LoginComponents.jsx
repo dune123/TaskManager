@@ -33,6 +33,8 @@ const LoginComponents = ({setLoginStatus}) => {
 
       if(response.status==201){
         localStorage.setItem("token",response.data.token)
+        localStorage.setItem("Username",response.data.username)
+        localStorage.setItem("email",response.data.email)
         toast.success("Login successfully")
         Navigate("/dashboard")
       }

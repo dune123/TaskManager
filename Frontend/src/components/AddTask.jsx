@@ -1,94 +1,275 @@
-import axios from 'axios';
-import React, { useState } from 'react'
-import { FiLoader } from 'react-icons/fi';
-import { toast } from 'react-toastify';
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { FiLoader } from "react-icons/fi";
+import { toast } from "react-toastify";
+import { GoDotFill } from "react-icons/go";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { MdDelete } from "react-icons/md";
 
-const AddTaskStage=()=>(
-  <div className='fixed top-0 left-0 w-screen h-screen bg-black/50 z-[1000] flex justify-center items-center'>
-      <div className='w-[42.5vw] h-[30vh] bg-white flex flex-col gap-[2vh] pt-[3vh] px-[2vw] rounded-md'>
-        <div className='flex flex-col items-center gap-4 pt-6'>
-          <FiLoader className='size-6 text-red-500 animate-spin' />
-          <h3 className='text-red-400 text-xl font-bold'>Adding your task</h3>
-        </div>
+const AddTaskStage = () => (
+  <div className="fixed top-0 left-0 w-screen h-screen bg-black/50 z-[1000] flex justify-center items-center">
+    <div className="w-[42.5vw] h-[30vh] bg-white flex flex-col gap-[2vh] pt-[3vh] px-[2vw] rounded-md">
+      <div className="flex flex-col items-center gap-4 pt-6">
+        <FiLoader className="size-6 text-red-500 animate-spin" />
+        <h3 className="text-red-400 text-xl font-bold">Adding your task</h3>
       </div>
     </div>
-)
-const AddTask = ({setAddTask,getAllTask}) => {
-  const [loading,setLoading]=useState(false);
-  const [taskData,setTaskData]=useState({
-    taskName:"",
-    description:"",
-    dueDate:"",
-    status:""
-  })
+  </div>
+);
+const AddTask = ({ setAddTask, getAllTask }) => {
+  const [loading, setLoading] = useState(false);
+  const [boardUser, setBoardUser] = useState([]);
+  const [checklistArr, setChecklistArr] = useState([]);
+  const [taskData, setTaskData] = useState({
+    taskName: "",
+    checkList: [],
+    dueDate: Date.now(),
+    priority: "",
+    assignedEmail: "",
+    status: "todo",
+  });
 
-  console.log(taskData)
-  const token=localStorage.getItem("token")
+  useEffect(() => {
+    getBoardUsers();
+  }, []);
 
-  async function AddTask(){
-    setLoading(true)
+  if (loading) {
+    return <AddTaskStage />;
+  }
+  const token = localStorage.getItem("token");
+
+  async function AddTask() {
+    setLoading(true);
     try {
-      const res=await axios.post('https://promanagerbakend.onrender.com/api/task/createTask',taskData,{
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const res = await axios.post(
+        "http://localhost:3000/api/task/createTask",
+        taskData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      })
+      );
 
-      if(res.status==201){
-        toast.success(res.data.message)
-        getAllTask()
+      if (res.status == 201) {
+        toast.success(res.data.message);
+        getAllTask();
         setAddTask(false);
-     }
-     else{
-       toast.error(res.data.message)
-     }
-     setLoading(false);
+      } else {
+        toast.error(res.data.message);
+      }
+      setLoading(false);
+    } catch (error) {
+      toast.error(error.message);
+      setLoading(false);
+    } finally {
+      setLoading(false);
     }
-      catch (error) {
-        toast.error(error.message);
-        setLoading(false)
-    }
-    finally{
-      setLoading(false)
-    }
-    }
+  }
 
-    if(loading){
-       return <AddTaskStage/>
+  async function getBoardUsers() {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/user/getBoardUser",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setBoardUser(response.data.boardUser);
+    } catch (error) {
+      toast.error(error.message);
     }
+  }
+
+  function ChangeDescription(index, value) {
+    const updatedChecklist = checklistArr.map((item, ind) => {
+      if (ind === index) {
+        return { ...item, description: value };
+      }
+      return item;
+    });
+
+    setChecklistArr(updatedChecklist);
+    setTaskData((prev) => ({
+      ...prev,
+      checkList: updatedChecklist,
+    }));
+  }
+
+  function deleteCheckList(index) {
+    const updatedChecklist = checklistArr.filter((_, ind) => ind !== index);
+
+    setChecklistArr(updatedChecklist);
+    setTaskData((prev) => ({
+      ...prev,
+      checkList: updatedChecklist,
+    }));
+  }
+
+  function AssignedEmail(email) {
+    setTaskData((prev) => ({
+      ...prev,
+      assigned: email,
+    }));
+  }
+  console.log(taskData);
+
   return (
     <div className="fixed top-0 left-0 w-screen h-screen bg-black/50 z-[1000] flex justify-center items-center">
-      <div className="w-[42.5vw] h-[50vh] bg-white flex flex-col gap-[2vh] pt-[3vh] px-[2vw] rounded-md">
-        <div className='flex flex-col gap-2'>
-          <input type="text" placeholder='Task Name' className='border-[#EEF2F5] border-2 rounded-md w-[98%] p-2' onChange={(e)=>setTaskData((prev)=>({
-            ...prev,
-            taskName:e.target.value
-          }))}/>
-         <textarea type="Task Description" className='border-[#EEF2F5] border-2 rounded-md w-[98%] p-2' onChange={(e)=>setTaskData((prev)=>({
-          ...prev,
-          description:e.target.value
-         }))}/>
-         <input type="date" placeholder='Due Date' onChange={(e)=>setTaskData((prev)=>({
-          ...prev,
-          dueDate:e.target.value
-         }))} 
-         className='border-[#EEF2F5] border-2 p-2'/>
-         <select className='border-[#EEF2F5] border-2 p-2' onChange={(e)=>setTaskData((prev)=>({
-          ...prev,
-          status:e.target.value
-         }))}>
-          <option>todo</option>
-          <option>backlog</option>
-          <option>done</option>
-         </select>
-         <div className='flex gap-4'>
-            <button className='bg-black text-white p-2 w-[20vw] rounded-lg border-none' onClick={()=>setAddTask(false)}>Cancel</button>
-            <button onClick={AddTask} className='bg-white border-black border-2 text-black p-2 w-[20vw] rounded-lg'>Add Task</button>
-         </div>
+      <div className="w-[50vw] h-[68vh] bg-white flex flex-col gap-[2vh] pt-[3vh] px-[2vw] rounded-md">
+        <div className="flex flex-col gap-2">
+          <div>
+            <label>Title: </label>
+            <input
+              type="text"
+              placeholder="Enter Task Name"
+              className="border-[#EEF2F5] border-2 rounded-md w-[98%] p-2"
+              onChange={(e) =>
+                setTaskData((prev) => ({
+                  ...prev,
+                  taskName: e.target.value,
+                }))
+              }
+            />
+          </div>
+          <div className="flex gap-2 items-center">
+            <label>Priority:</label>
+            <div
+              onClick={() =>
+                setTaskData((prev) => ({ ...prev, priority: "high" }))
+              }
+              className="border-1 rounded-md flex p-1 items-center border-[#E2E2E2] cursor-pointer"
+              style={{
+                backgroundColor:
+                  taskData.priority === "high" ? "#EEECEC" : "white",
+              }}
+            >
+              <GoDotFill className="text-[#FF2473]" /> High Priority
+            </div>
+            <div
+              onClick={() =>
+                setTaskData((prev) => ({ ...prev, priority: "moderate" }))
+              }
+              className="border-1 rounded-md flex p-1 items-center border-[#E2E2E2] cursor-pointer"
+              style={{
+                backgroundColor:
+                  taskData.priority === "moderate" ? "#EEECEC" : "white",
+              }}
+            >
+              <GoDotFill className="text-[#18B0FF]" /> Moderate Priority
+            </div>
+            <div
+              onClick={() =>
+                setTaskData((prev) => ({ ...prev, priority: "low" }))
+              }
+              className="border-1 rounded-md flex p-1 items-center border-[#E2E2E2] cursor-pointer"
+              style={{
+                backgroundColor:
+                  taskData.priority === "low" ? "#EEECEC" : "white",
+              }}
+            >
+              <GoDotFill className="text-[#63C05B]" /> Low Priority
+            </div>
+          </div>
+          {/* Assigned user */}
+          <div>
+            <label>Assigned User:</label>
+            <select
+              value={taskData.assignedEmail}
+              onChange={(e) =>
+                setTaskData((prev) => ({
+                  ...prev,
+                  assignedEmail: e.target.value,
+                }))
+              }
+            >
+              <option value="" disabled>
+                Select a user
+              </option>
+              {boardUser &&
+                boardUser.map((item, index) => (
+                  <option key={index} value={item.email}>
+                    {item.email}
+                  </option>
+                ))}
+            </select>
+          </div>
+
+          {/* Checklist */}
+          <div className="flex flex-col gap-1 items-start">
+            <label>Checklist:</label>
+            <button
+              className="text-[#E2E2E2]"
+              onClick={() => {
+                const updatedChecklist = [
+                  ...checklistArr,
+                  { checked: false, description: "" },
+                ];
+
+                setChecklistArr(updatedChecklist);
+                setTaskData((prev) => ({
+                  ...prev,
+                  checkList: updatedChecklist,
+                }));
+              }}
+            >
+              + Add Task
+            </button>
+            <div className="flex flex-col gap-1 h-[25vh] overflow-auto w-[100%]">
+              {checklistArr &&
+                checklistArr.map((item, index) => (
+                  <div
+                    key={index}
+                    className="border-[#E2E2E2] border-1 p-1 rounded-md flex gap-1"
+                  >
+                    <input type="checkbox" value={checklistArr[index]} />
+                    <input
+                      type="text"
+                      value={item.description}
+                      onChange={(e) => ChangeDescription(index, e.target.value)}
+                      className="w-[100%]"
+                    />
+                    <MdDelete
+                      className="text-red-500 cursor-pointer"
+                      onClick={() => deleteCheckList(index)}
+                    />
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          {/* Bottom container */}
+          <div className="flex w-[100%] justify-between">
+            <DatePicker
+              placeholderText="Select due date"
+              onChange={(date) =>
+                setTaskData((prev) => ({ ...prev, dueDate: date }))
+              }
+              selected={taskData.dueDate}
+            />
+            <div className="flex gap-2">
+              <button
+                className="bg-white text-red-500 p-2 rounded-lg border-red-500 border-1 w-40 cursor-pointer"
+                onClick={() => setAddTask(false)}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={AddTask}
+                className="bg-[#17A2B8] border-none border-2 text-white p-2 w-40 rounded-lg cursor-pointer"
+              >
+                Save
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AddTask
+export default AddTask;

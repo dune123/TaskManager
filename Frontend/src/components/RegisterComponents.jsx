@@ -24,7 +24,14 @@ const RegisterComponents = ({setLoginStatus}) => {
       }
 
     } catch (error) {
-      toast.error(error.message)
+      if (error.response && error.response.data) {
+        // Backend validation error
+        const backendMessage = error.response.data.message;
+        toast.error(backendMessage || "Something went wrong");
+      } else {
+        // Network or unknown error
+        toast.error(error.message);
+      }
     }
   }
 
