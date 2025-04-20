@@ -56,27 +56,36 @@ const TaskShare = () => {
         <div className="p-2">
           <h1 className="font-semibold text-3xl">{task.taskName}</h1>
         </div>
-        <div>
+        <div className="flex flex-col gap-4">
           <p>
             Checklist (
-            {task?.checklist?.filter((item) => item.checked==true).length || 0}/
-            {task?.checklist?.length || 0})
+            {task?.checklist?.filter((item) => item.checked == true).length ||
+              0}
+            /{task?.checklist?.length || 0})
           </p>
 
-          <div>
-            {task.checklist.map((x) => (
-              <div className="p-1 border-[#E2E2E2] border-2 flex items-center rounded-md gap-2">
-                <input
-                  type="checkbox"
-                  checked={x.checked}
-                  onChange={(e) =>
-                    changeCheckListStatus(x._id, e.target.checked)
-                  }
-                />
-                <p>{x.description}</p>
-              </div>
-            ))}
+          <div className="flex flex-col overflow-y-auto h-[40vh]">
+            {Array.isArray(task.checklist) &&
+              task.checklist.map((x) => (
+                <div
+                  key={x._id}
+                  className="m-2 p-1 border-[#E2E2E2] border-2 flex items-center rounded-md gap-2"
+                >
+                  <input
+                    type="checkbox"
+                    checked={x.checked}
+                    onChange={(e) =>
+                      changeCheckListStatus(x._id, e.target.checked)
+                    }
+                  />
+                  <p>{x.description}</p>
+                </div>
+              ))}
           </div>
+        </div>
+        <div className="flex gap-2 items-center">
+            <p className="text-semibold">due Date</p>
+            <div className="bg-red-500 text-white p-1 rounded-md">due date</div>
         </div>
       </div>
     </div>

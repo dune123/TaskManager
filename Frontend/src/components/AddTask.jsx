@@ -110,13 +110,17 @@ const AddTask = ({ setAddTask, getAllTask }) => {
     }));
   }
 
-  function AssignedEmail(email) {
-    setTaskData((prev) => ({
-      ...prev,
-      assigned: email,
-    }));
+  async function getSuggestion() {
+    const taskName = taskData.taskName;
+  
+    try {
+      const response = await axios.get(`"http://localhost:3000/api/task/checklistsuggestion/${taskName}`);
+  
+      console.log(response.data);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message);
+    }
   }
-  console.log(taskData);
 
   return (
     <div className="fixed top-0 left-0 w-screen h-screen bg-black/50 z-[1000] flex justify-center items-center">
@@ -175,6 +179,7 @@ const AddTask = ({ setAddTask, getAllTask }) => {
               <GoDotFill className="text-[#63C05B]" /> Low Priority
             </div>
           </div>
+
           {/* Assigned user */}
           <div>
             <label>Assigned User:</label>
@@ -187,8 +192,8 @@ const AddTask = ({ setAddTask, getAllTask }) => {
                 }))
               }
             >
-              <option value="" disabled>
-                Select a user
+              <option value="None">
+                None
               </option>
               {boardUser &&
                 boardUser.map((item, index) => (
@@ -226,7 +231,7 @@ const AddTask = ({ setAddTask, getAllTask }) => {
                     key={index}
                     className="border-[#E2E2E2] border-1 p-1 rounded-md flex gap-1"
                   >
-                    <input type="checkbox" value={checklistArr[index]} />
+                    <input type="checkbox" value={checklistArr[index].checked} />
                     <input
                       type="text"
                       value={item.description}

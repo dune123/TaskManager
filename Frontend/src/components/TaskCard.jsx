@@ -10,6 +10,7 @@ import {
   CiSquareChevUp,
 } from "react-icons/ci";
 import { MdDelete } from "react-icons/md";
+import EditTask from "./EditTask";
 
 const DeletingTask = () => (
   <div className="fixed top-0 left-0 w-screen h-screen bg-black/50 z-[1000] flex justify-center items-center">
@@ -88,6 +89,7 @@ const ChangingTask = () => (
 const TaskCard = ({ item, getAllTask }) => {
   const [modalDelete, setModalDelete] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [editTaskModel,setEditTaskModel]=useState(false);
   const [checkedLen, setCheckedLen] = useState(0);
   const token = localStorage.getItem("token");
   const email = localStorage.getItem("email");
@@ -234,7 +236,7 @@ const TaskCard = ({ item, getAllTask }) => {
           </div>
           <div className="flex gap-1 font-light text-sm">
             <CiShare2 className="cursor-pointer" onClick={()=>shareTask(item._id)}/>
-            <CiEdit className=" cursor-pointer" />
+            <CiEdit className=" cursor-pointer" onClick={()=>setEditTaskModel(true)}/>
             <MdDelete
               onClick={() => setModalDelete(true)}
               className="text-red-500 cursor-pointer"
@@ -329,6 +331,9 @@ const TaskCard = ({ item, getAllTask }) => {
           taskId={item._id}
         />
       )}
+      {
+        editTaskModel&&<EditTask setEditTaskModel={setEditTaskModel} editableTask={item} getAllTask={getAllTask}/>
+      }
     </>
   );
 };
