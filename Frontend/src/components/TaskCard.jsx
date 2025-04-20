@@ -89,7 +89,7 @@ const ChangingTask = () => (
 const TaskCard = ({ item, getAllTask }) => {
   const [modalDelete, setModalDelete] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [editTaskModel,setEditTaskModel]=useState(false);
+  const [editTaskModel, setEditTaskModel] = useState(false);
   const [checkedLen, setCheckedLen] = useState(0);
   const token = localStorage.getItem("token");
   const email = localStorage.getItem("email");
@@ -129,14 +129,14 @@ const TaskCard = ({ item, getAllTask }) => {
     setCheckedLen(len);
   };
 
-  async function changeCheckListStatus(checklistId,checked) {
+  async function changeCheckListStatus(checklistId, checked) {
     try {
       await axios.put(
         "http://localhost:3000/api/task/checklistChange",
         {
           taskId: item._id,
           checklistItemIds: checklistId,
-          checkedItem:checked
+          checkedItem: checked,
         },
         {
           headers: {
@@ -145,7 +145,7 @@ const TaskCard = ({ item, getAllTask }) => {
         }
       );
 
-      getAllTask()
+      getAllTask();
     } catch (error) {
       toast.error(error.message);
     }
@@ -159,7 +159,9 @@ const TaskCard = ({ item, getAllTask }) => {
     return str.split("@")[0].slice(0, 2).toUpperCase();
   }
 
-  {/* For changing the date format */}
+  {
+    /* For changing the date format */
+  }
   function formatDateToMonthDay(isoDateStr) {
     const date = new Date(isoDateStr);
     const months = [
@@ -193,19 +195,18 @@ const TaskCard = ({ item, getAllTask }) => {
     return `${month} ${day}${getOrdinalSuffix(day)}`;
   }
 
-  {/* Share the task */}
+  {
+    /* Share the task */
+  }
   const shareTask = (taskId) => {
     const protocol = window.location.protocol;
     const host = window.location.host;
-    const link=`${protocol}//${host}/taskshare/${taskId}`
+    const link = `${protocol}//${host}/taskshare/${taskId}`;
     console.log(link);
-    navigator.clipboard.writeText(link)
+    navigator.clipboard.writeText(link);
     toast.success("Link Copied on clipboard");
   };
 
-
-
-  
   return loading ? (
     <>
       <ChangingTask />
@@ -228,15 +229,36 @@ const TaskCard = ({ item, getAllTask }) => {
               }}
             />
             <p>{item.priority} priority</p>
-            {email != item.assigned && (
-              <p className="rounded-[50%] bg-[#FFEBEB] text-black text-[0.5rem] p-1">
-                {getFirst2word(item.assigned)}
-              </p>
-            )}
+            {/*email != item.assigned && (
+              <div>
+                <p className="rounded-[50%] bg-[#FFEBEB] text-black text-[0.5rem] p-1 cursor-pointer">
+                  {getFirst2word(item.assigned)}
+                </p>
+                <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-black text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                  {item.assigned.email}
+                </span>
+              </div>
+            )*/}
+            {email !== item.assigned && (
+  <div className="relative group flex items-center justify-center w-6 h-6"> {/* Ensured dimensions */}
+    <p className="rounded-full bg-[#FFEBEB] text-black text-[0.5rem] p-1 cursor-pointer flex items-center justify-center w-full h-full">
+      {getFirst2word(item.assigned)}
+    </p>
+    <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-black text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+      {item.assigned}
+    </span>
+  </div>
+)}
           </div>
           <div className="flex gap-1 font-light text-sm">
-            <CiShare2 className="cursor-pointer" onClick={()=>shareTask(item._id)}/>
-            <CiEdit className=" cursor-pointer" onClick={()=>setEditTaskModel(true)}/>
+            <CiShare2
+              className="cursor-pointer"
+              onClick={() => shareTask(item._id)}
+            />
+            <CiEdit
+              className=" cursor-pointer"
+              onClick={() => setEditTaskModel(true)}
+            />
             <MdDelete
               onClick={() => setModalDelete(true)}
               className="text-red-500 cursor-pointer"
@@ -269,7 +291,9 @@ const TaskCard = ({ item, getAllTask }) => {
                   <input
                     type="checkbox"
                     checked={x.checked}
-                    onChange={(e) => changeCheckListStatus(x._id,e.target.checked)}
+                    onChange={(e) =>
+                      changeCheckListStatus(x._id, e.target.checked)
+                    }
                   />
                   <p>{x.description}</p>
                 </div>
@@ -331,9 +355,13 @@ const TaskCard = ({ item, getAllTask }) => {
           taskId={item._id}
         />
       )}
-      {
-        editTaskModel&&<EditTask setEditTaskModel={setEditTaskModel} editableTask={item} getAllTask={getAllTask}/>
-      }
+      {editTaskModel && (
+        <EditTask
+          setEditTaskModel={setEditTaskModel}
+          editableTask={item}
+          getAllTask={getAllTask}
+        />
+      )}
     </>
   );
 };
