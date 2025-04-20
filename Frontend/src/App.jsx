@@ -7,14 +7,14 @@ import TaskShare from './pages/TaskShare'
 
 const App = () => {
   return (
-    <BrowserRouter>
+    <>
     <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
         <Route path="/" element={<Home/>}/>
         <Route path="/dashboard" element={<Dashboard/>}/>
         <Route path="/taskShare/:taskId" element={<TaskShare/>} />
       </Routes>
-    </BrowserRouter>
+    </>
   )
 }
 

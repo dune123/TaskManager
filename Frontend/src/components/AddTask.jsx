@@ -19,6 +19,9 @@ const AddTaskStage = () => (
 );
 const AddTask = ({ setAddTask, getAllTask }) => {
   const [loading, setLoading] = useState(false);
+  const [showSug,setShowSug]=useState(false);
+  const [loadingSuggestion, setLoadingSuggestion] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
   const [boardUser, setBoardUser] = useState([]);
   const [checklistArr, setChecklistArr] = useState([]);
   const [taskData, setTaskData] = useState({
@@ -112,168 +115,197 @@ const AddTask = ({ setAddTask, getAllTask }) => {
 
   async function getSuggestion() {
     const taskName = taskData.taskName;
-  
+    setShowSug(true)
     try {
-      const response = await axios.get(`"http://localhost:3000/api/task/checklistsuggestion/${taskName}`);
-  
-      console.log(response.data);
+      setLoadingSuggestion(true);
+      const response = await axios.get(
+        `http://localhost:3000/api/task/checklistsuggestion/${taskName}`
+      );
+
+      // Assuming API returns { suggestions: ["Step 1", "Step 2", ...] }
+      setSuggestions(response.data.suggestions || []);
     } catch (error) {
       toast.error(error?.response?.data?.message || error.message);
+      setSuggestions([]);
+    } finally {
+      setLoadingSuggestion(false);
     }
   }
 
+
+  useEffect(() => {
+    if (taskData.taskName.length >= 6){
+       getSuggestion();
+    }
+  }, [taskData.taskName]);
+
   return (
     <div className="fixed top-0 left-0 w-screen h-screen bg-black/50 z-[1000] flex justify-center items-center">
-      <div className="w-[50vw] h-[68vh] bg-white flex flex-col gap-[2vh] pt-[3vh] px-[2vw] rounded-md">
-        <div className="flex flex-col gap-2">
-          <div>
-            <label>Title: </label>
-            <input
-              type="text"
-              placeholder="Enter Task Name"
-              className="border-[#EEF2F5] border-2 rounded-md w-[98%] p-2"
-              onChange={(e) =>
-                setTaskData((prev) => ({
-                  ...prev,
-                  taskName: e.target.value,
-                }))
-              }
-            />
+    {
+      showSug &&(loadingSuggestion?<div className="text-black bg-white p-10 absolute top-1 right-1 rounded-md">suggestion loading....</div>:
+      <div className="text-black bg-white p-2 absolute top-1 right-1 rounded-md w-[15vw] flex flex-col gap-1">
+        {
+          suggestions.map((item,index)=>(
+            <ul key={index}>
+             <li>{item}</li> 
+            </ul>
+          ))
+        }
+        <button onClick={()=>{
+          setShowSug(false);
+        }} className="border-2 border-red-500 text-red-500 p-2 rounded-md">don't show suggestion</button>
+      </div>)
+    }
+    <div className="w-[50vw] h-[68vh] bg-white flex flex-col gap-[2vh] pt-[3vh] px-[2vw] rounded-md">
+      <div className="flex flex-col gap-2">
+        <div>
+          <label>Title: </label>
+          <input
+            type="text"
+            placeholder="Enter Task Name"
+            className="border-[#EEF2F5] border-2 rounded-md w-[98%] p-2"
+            onChange={(e) =>
+              setTaskData((prev) => ({
+                ...prev,
+                taskName: e.target.value,
+              }))
+            }
+          />
+        </div>
+        <div className="flex gap-2 items-center">
+          <label>Priority:</label>
+          <div
+            onClick={() =>
+              setTaskData((prev) => ({ ...prev, priority: "high" }))
+            }
+            className="border-1 rounded-md flex p-1 items-center border-[#E2E2E2] cursor-pointer"
+            style={{
+              backgroundColor:
+                taskData.priority === "high" ? "#EEECEC" : "white",
+            }}
+          >
+            <GoDotFill className="text-[#FF2473]" /> High Priority
           </div>
-          <div className="flex gap-2 items-center">
-            <label>Priority:</label>
-            <div
-              onClick={() =>
-                setTaskData((prev) => ({ ...prev, priority: "high" }))
-              }
-              className="border-1 rounded-md flex p-1 items-center border-[#E2E2E2] cursor-pointer"
-              style={{
-                backgroundColor:
-                  taskData.priority === "high" ? "#EEECEC" : "white",
-              }}
-            >
-              <GoDotFill className="text-[#FF2473]" /> High Priority
-            </div>
-            <div
-              onClick={() =>
-                setTaskData((prev) => ({ ...prev, priority: "moderate" }))
-              }
-              className="border-1 rounded-md flex p-1 items-center border-[#E2E2E2] cursor-pointer"
-              style={{
-                backgroundColor:
-                  taskData.priority === "moderate" ? "#EEECEC" : "white",
-              }}
-            >
-              <GoDotFill className="text-[#18B0FF]" /> Moderate Priority
-            </div>
-            <div
-              onClick={() =>
-                setTaskData((prev) => ({ ...prev, priority: "low" }))
-              }
-              className="border-1 rounded-md flex p-1 items-center border-[#E2E2E2] cursor-pointer"
-              style={{
-                backgroundColor:
-                  taskData.priority === "low" ? "#EEECEC" : "white",
-              }}
-            >
-              <GoDotFill className="text-[#63C05B]" /> Low Priority
-            </div>
+          <div
+            onClick={() =>
+              setTaskData((prev) => ({ ...prev, priority: "moderate" }))
+            }
+            className="border-1 rounded-md flex p-1 items-center border-[#E2E2E2] cursor-pointer"
+            style={{
+              backgroundColor:
+                taskData.priority === "moderate" ? "#EEECEC" : "white",
+            }}
+          >
+            <GoDotFill className="text-[#18B0FF]" /> Moderate Priority
           </div>
+          <div
+            onClick={() =>
+              setTaskData((prev) => ({ ...prev, priority: "low" }))
+            }
+            className="border-1 rounded-md flex p-1 items-center border-[#E2E2E2] cursor-pointer"
+            style={{
+              backgroundColor:
+                taskData.priority === "low" ? "#EEECEC" : "white",
+            }}
+          >
+            <GoDotFill className="text-[#63C05B]" /> Low Priority
+          </div>
+        </div>
 
-          {/* Assigned user */}
-          <div>
-            <label>Assigned User:</label>
-            <select
-              value={taskData.assignedEmail}
-              onChange={(e) =>
-                setTaskData((prev) => ({
-                  ...prev,
-                  assignedEmail: e.target.value,
-                }))
-              }
-            >
-              <option value="None">
-                None
-              </option>
-              {boardUser &&
-                boardUser.map((item, index) => (
-                  <option key={index} value={item.email}>
-                    {item.email}
-                  </option>
-                ))}
-            </select>
-          </div>
+        {/* Assigned user */}
+        <div>
+          <label>Assigned User:</label>
+          <select
+            value={taskData.assignedEmail}
+            onChange={(e) =>
+              setTaskData((prev) => ({
+                ...prev,
+                assignedEmail: e.target.value,
+              }))
+            }
+          >
+            <option value="None">
+              None
+            </option>
+            {boardUser &&
+              boardUser.map((item, index) => (
+                <option key={index} value={item.email}>
+                  {item.email}
+                </option>
+              ))}
+          </select>
+        </div>
 
-          {/* Checklist */}
-          <div className="flex flex-col gap-1 items-start">
-            <label>Checklist:</label>
+        {/* Checklist */}
+        <div className="flex flex-col gap-1 items-start">
+          <label>Checklist:</label>
+          <button
+            className="text-[#E2E2E2]"
+            onClick={() => {
+              const updatedChecklist = [
+                ...checklistArr,
+                { checked: false, description: "" },
+              ];
+
+              setChecklistArr(updatedChecklist);
+              setTaskData((prev) => ({
+                ...prev,
+                checkList: updatedChecklist,
+              }));
+            }}
+          >
+            + Add Task
+          </button>
+          <div className="flex flex-col gap-1 h-[25vh] overflow-auto w-[100%]">
+            {checklistArr &&
+              checklistArr.map((item, index) => (
+                <div
+                  key={index}
+                  className="border-[#E2E2E2] border-1 p-1 rounded-md flex gap-1"
+                >
+                  <input type="checkbox" value={checklistArr[index].checked} />
+                  <input
+                    type="text"
+                    value={item.description}
+                    onChange={(e) => ChangeDescription(index, e.target.value)}
+                    className="w-[100%]"
+                  />
+                  <MdDelete
+                    className="text-red-500 cursor-pointer"
+                    onClick={() => deleteCheckList(index)}
+                  />
+                </div>
+              ))}
+          </div>
+        </div>
+
+        {/* Bottom container */}
+        <div className="flex w-[100%] justify-between">
+          <DatePicker
+            placeholderText="Select due date"
+            onChange={(date) =>
+              setTaskData((prev) => ({ ...prev, dueDate: date }))
+            }
+            selected={taskData.dueDate}
+          />
+          <div className="flex gap-2">
             <button
-              className="text-[#E2E2E2]"
-              onClick={() => {
-                const updatedChecklist = [
-                  ...checklistArr,
-                  { checked: false, description: "" },
-                ];
-
-                setChecklistArr(updatedChecklist);
-                setTaskData((prev) => ({
-                  ...prev,
-                  checkList: updatedChecklist,
-                }));
-              }}
+              className="bg-white text-red-500 p-2 rounded-lg border-red-500 border-1 w-40 cursor-pointer"
+              onClick={() => setAddTask(false)}
             >
-              + Add Task
+              Cancel
             </button>
-            <div className="flex flex-col gap-1 h-[25vh] overflow-auto w-[100%]">
-              {checklistArr &&
-                checklistArr.map((item, index) => (
-                  <div
-                    key={index}
-                    className="border-[#E2E2E2] border-1 p-1 rounded-md flex gap-1"
-                  >
-                    <input type="checkbox" value={checklistArr[index].checked} />
-                    <input
-                      type="text"
-                      value={item.description}
-                      onChange={(e) => ChangeDescription(index, e.target.value)}
-                      className="w-[100%]"
-                    />
-                    <MdDelete
-                      className="text-red-500 cursor-pointer"
-                      onClick={() => deleteCheckList(index)}
-                    />
-                  </div>
-                ))}
-            </div>
-          </div>
-
-          {/* Bottom container */}
-          <div className="flex w-[100%] justify-between">
-            <DatePicker
-              placeholderText="Select due date"
-              onChange={(date) =>
-                setTaskData((prev) => ({ ...prev, dueDate: date }))
-              }
-              selected={taskData.dueDate}
-            />
-            <div className="flex gap-2">
-              <button
-                className="bg-white text-red-500 p-2 rounded-lg border-red-500 border-1 w-40 cursor-pointer"
-                onClick={() => setAddTask(false)}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={AddTask}
-                className="bg-[#17A2B8] border-none border-2 text-white p-2 w-40 rounded-lg cursor-pointer"
-              >
-                Save
-              </button>
-            </div>
+            <button
+              onClick={AddTask}
+              className="bg-[#17A2B8] border-none border-2 text-white p-2 w-40 rounded-lg cursor-pointer"
+            >
+              Save
+            </button>
           </div>
         </div>
       </div>
     </div>
+  </div>
   );
 };
 
