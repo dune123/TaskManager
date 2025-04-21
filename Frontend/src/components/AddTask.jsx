@@ -77,7 +77,7 @@ const AddTask = ({ setAddTask, getAllTask }) => {
     setLoading(true);
     try {
       const res = await axios.post(
-        "http://localhost:3000/api/task/createTask",
+        "https://promanagerbakend-production.up.railway.app/api/task/createTask",
         taskData,
         {
           headers: {
@@ -106,7 +106,7 @@ const AddTask = ({ setAddTask, getAllTask }) => {
   async function getBoardUsers() {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getBoardUser",
+        "https://promanagerbakend-production.up.railway.app/api/user/getBoardUser",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -151,7 +151,7 @@ const AddTask = ({ setAddTask, getAllTask }) => {
     try {
       setLoadingSuggestion(true);
       const response = await axios.get(
-        `http://localhost:3000/api/task/checklistsuggestion/${taskName}`
+        `https://promanagerbakend-production.up.railway.app/api/task/checklistsuggestion/${taskName}`
       );
 
       // Assuming API returns { suggestions: ["Step 1", "Step 2", ...] }

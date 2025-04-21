@@ -46,7 +46,7 @@ const Dashboard = () => {
   async function getAllTask() {
     try {
       const response = await axios.get(
-        "https://promanagerbakend.onrender.com/api/task/getTask",
+        "https://promanagerbakend-production.up.railway.app/api/task/getTask",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -65,7 +65,7 @@ const Dashboard = () => {
   async function Logout() {
     try {
       await axios.post(
-        "https://promanagerbakend.onrender.com/api/user/logout",
+        "https://promanagerbakend-production.up.railway.app/api/user/logout",
         {},
         {
           headers: {
@@ -210,7 +210,7 @@ const Dashboard = () => {
 
       // Handle status change with API
       await axios.post(
-        "http://localhost:3000/api/task/changeStatus",
+        "https://promanagerbakend-production.up.railway.app/api/task/changeStatus",
         { taskId: task._id, newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );

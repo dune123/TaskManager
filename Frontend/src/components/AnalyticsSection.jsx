@@ -11,7 +11,7 @@ const AnalyticsSection = () => {
 
   const getStatusandPriority = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/task/getanalytics", {
+      const res = await axios.get("https://promanagerbakend-production.up.railway.app/api/task/getanalytics", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

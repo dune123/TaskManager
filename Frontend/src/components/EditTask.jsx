@@ -27,7 +27,7 @@ const EditTask = ({ setEditTaskModel, editableTask, getAllTask }) => {
   async function getBoardUsers() {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getBoardUser",
+        "https://promanagerbakend-production.up.railway.app/api/user/getBoardUser",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -46,7 +46,7 @@ const EditTask = ({ setEditTaskModel, editableTask, getAllTask }) => {
     setLoading(true);
     try {
       const res = await axios.put(
-        `http://localhost:3000/api/task/editTask/${taskId}`,
+        `https://promanagerbakend-production.up.railway.app/api/task/editTask/${taskId}`,
         {
           task,
         },

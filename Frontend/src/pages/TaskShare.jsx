@@ -10,7 +10,7 @@ const TaskShare = () => {
   async function getTask() {
     try {
       const res = await axios.get(
-        `http://localhost:3000/api/task/getTaskById/${taskId}`
+        `https://promanagerbakend-production.up.railway.app/api/task/getTaskById/${taskId}`
       );
       console.log(res);
       if (res.status === 201) {

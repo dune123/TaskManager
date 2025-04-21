@@ -8,7 +8,7 @@ const AddBoardUser = ({setAddBUser}) => {
 
     async function addBoardUserToTheUser(){
         try {
-            await axios.post('http://localhost:3000/api/user/addBoardUser',{boardUserEmail:boardEmail},{
+            await axios.post('https://promanagerbakend-production.up.railway.app/api/user/addBoardUser',{boardUserEmail:boardEmail},{
                 headers: {
                     Authorization: `Bearer ${token}`,
                   }

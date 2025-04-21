@@ -31,7 +31,7 @@ const ModalDelete = ({ setModalDelete, getAllTask, taskId }) => {
     try {
       setLoading(true);
       await axios.delete(
-        "https://promanagerbakend.onrender.com/api/task/deleteTask",
+        "https://promanagerbakend-production.up.railway.app/api/task/deleteTask",
         {
           data: { taskId },
           headers: {
@@ -99,7 +99,7 @@ const TaskCard = ({ item, getAllTask }) => {
     setLoading(true);
     try {
       await axios.post(
-        "http://localhost:3000/api/task/changeStatus",
+        "https://promanagerbakend-production.up.railway.app/api/task/changeStatus",
         {
           taskId,
           newStatus: taskValue,
@@ -132,7 +132,7 @@ const TaskCard = ({ item, getAllTask }) => {
   async function changeCheckListStatus(checklistId, checked) {
     try {
       await axios.put(
-        "http://localhost:3000/api/task/checklistChange",
+        "https://promanagerbakend-production.up.railway.app/api/task/checklistChange",
         {
           taskId: item._id,
           checklistItemIds: checklistId,
