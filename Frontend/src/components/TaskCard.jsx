@@ -240,15 +240,17 @@ const TaskCard = ({ item, getAllTask }) => {
               </div>
             )*/}
             {email !== item.assigned && (
-  <div className="relative group flex items-center justify-center w-6 h-6"> {/* Ensured dimensions */}
-    <p className="rounded-full bg-[#FFEBEB] text-black text-[0.5rem] p-1 cursor-pointer flex items-center justify-center w-full h-full">
-      {getFirst2word(item.assigned)}
-    </p>
-    <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-black text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
-      {item.assigned}
-    </span>
-  </div>
-)}
+              <div className="relative group flex items-center justify-center w-6 h-6">
+                {" "}
+                {/* Ensured dimensions */}
+                <p className="rounded-full bg-[#FFEBEB] text-black text-[0.5rem] p-1 cursor-pointer flex items-center justify-center w-full h-full">
+                  {getFirst2word(item.assigned)}
+                </p>
+                <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-black text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                  {item.assigned}
+                </span>
+              </div>
+            )}
           </div>
           <div className="flex gap-1 font-light text-sm">
             <CiShare2

@@ -25,10 +25,42 @@ const TaskShare = () => {
     }
   }
 
+  // Format current date
+  function formatDateToMonthDay(isoDateStr) {
+    const date = new Date(isoDateStr);
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const day = date.getDate();
+    const month = months[date.getMonth()];
+
+    function getOrdinalSuffix(n) {
+      if (n >= 11 && n <= 13) return "th";
+      const lastDigit = n % 10;
+      if (lastDigit === 1) return "st";
+      if (lastDigit === 2) return "nd";
+      if (lastDigit === 3) return "rd";
+      return "th";
+    }
+
+    return `${month} ${day}${getOrdinalSuffix(day)}`;
+  }
+
   useEffect(() => {
     getTask();
   }, []);
-  console.log(task);
+  
   return (
     <div className="flex flex-col items-center">
       {/* top container */}
@@ -85,7 +117,7 @@ const TaskShare = () => {
         </div>
         <div className="flex gap-2 items-center">
             <p className="text-semibold">due Date</p>
-            <div className="bg-red-500 text-white p-1 rounded-md">due date</div>
+            <div className="bg-red-500 text-white p-1 rounded-md">{formatDateToMonthDay(task.duedate)}</div>
         </div>
       </div>
     </div>

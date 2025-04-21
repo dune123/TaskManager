@@ -30,7 +30,7 @@ const Dashboard = () => {
   const [isAnalystics, setIsAnalytics] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isSetting, setIsSetting] = useState(false);
-  const [addTask, setAddTask] = useState(false);
+  const [addTask, setAddTask] = useState(true);
   const [addBUser, setAddBUser] = useState(false);
   const [allTasks, setAllTasks] = useState([]);
   const [todo, setTodo] = useState([]);
@@ -115,7 +115,7 @@ const Dashboard = () => {
   function filterTaskAcc(tasks, filterType) {
     const now = new Date();
     let end;
-
+  
     if (filterType === "this week") {
       end = new Date();
       end.setDate(now.getDate() + 7);
@@ -126,36 +126,42 @@ const Dashboard = () => {
       end = new Date();
       end.setFullYear(now.getFullYear() + 1);
     }
-
+  
     const filtered = tasks.filter((task) => {
       const due = new Date(task.duedate);
       return due >= now && due <= end;
     });
-
-    console.log("filtered", filtered);
-
-    setTodo([]);
-    setBacklog([]);
-    setDone([]);
-    setProgress([]);
-
-    // Sort tasks by some order (you might want to add an 'order' field to your tasks)
-    const sorted = filtered.sort(
-      (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-    );
-
-    // Update state with sorted tasks
+  
+    // Instead of setting state in a loop, calculate all at once
+    const newTodo = [];
+    const newBacklog = [];
+    const newDone = [];
+    const newProgress = [];
+  
+    const priorityOrder = { high: 3, medium: 2, low: 1 };
+  
+    // Sort by priority (high to low)
+    const sorted = [...filtered].sort((a, b) => {
+      return (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
+    });
+  
     sorted.forEach((item) => {
       if (item.status === "todo") {
-        setTodo((prev) => [...prev, item]);
+        newTodo.push(item);
       } else if (item.status === "backlog") {
-        setBacklog((prev) => [...prev, item]);
+        newBacklog.push(item);
       } else if (item.status === "done") {
-        setDone((prev) => [...prev, item]);
+        newDone.push(item);
       } else if (item.status === "inprogress") {
-        setProgress((prev) => [...prev, item]);
+        newProgress.push(item);
       }
     });
+  
+    // Update all states at once
+    setTodo(newTodo);
+    setBacklog(newBacklog);
+    setDone(newDone);
+    setProgress(newProgress);
   }
 
   useEffect(() => {
@@ -198,19 +204,19 @@ const Dashboard = () => {
     e.preventDefault();
     const task = JSON.parse(e.dataTransfer.getData("task"));
     const newStatus = targetStatus;
-  
+
     try {
       setLoading(true);
-  
+
       // Handle status change with API
       await axios.post(
         "http://localhost:3000/api/task/changeStatus",
         { taskId: task._id, newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-  
+
       await getAllTask();
-  
+
       toast.success("Task status updated successfully");
     } catch (error) {
       toast.error(error?.response?.data?.message || error.message);
@@ -218,11 +224,10 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
-  
-  if (loading) return <ChangingTask />;
 
   return (
     <>
+      {loading && <ChangingTask />}
       <div className="w-full h-full flex">
         {/* Sidebar */}
         <div className="w-[15%] flex flex-col items-center gap-10">
@@ -313,7 +318,7 @@ const Dashboard = () => {
                     <h2 className="text-xl font-bold mb-3">{title}</h2>
                     {title === "To-do" && (
                       <button
-                        className="text-red-500 border-red-500 cursor-pointer"
+                        className="text-red-500 border-red-500 cursor-pointer border-2 rounded-md p-1"
                         onClick={() => setAddTask(true)}
                       >
                         Add task
@@ -331,9 +336,6 @@ const Dashboard = () => {
                         item={item}
                         getAllTask={getAllTask}
                         draggable
-                        onDragStart={(e) => handleDragStart(e, item)}
-                        onDragOver={handleDragOver}
-                        onDrop={(e) => handleDrop(e, status)}
                       />
                     </div>
                   ))}

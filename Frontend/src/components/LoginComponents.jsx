@@ -9,9 +9,9 @@ const LoggingState=()=>(
   <div className='fixed top-0 left-0 w-screen h-screen bg-black/50 z-[1000] flex justify-center items-center'>
 			<div className='w-[42.5vw] h-[30vh] bg-white flex flex-col gap-[2vh] pt-[3vh] px-[2vw] rounded-md'>
 				<div className='flex flex-col items-center gap-4 pt-6'>
-					<FiLoader className='size-6 text-blue-500 animate-spin' />
-					<h3 className='text-blue-400 text-xl font-bold'>Logging you in</h3>
-					<p className='text-blue-400 text-sm'>Redirecting...</p>
+					<FiLoader className='size-6 text-[#17A2B8] animate-spin' />
+					<h3 className='text-[#17A2B8] text-xl font-bold'>Logging you in</h3>
+					<p className='text-[#17A2B8] text-sm'>Redirecting...</p>
 				</div>
 			</div>
 		</div>
